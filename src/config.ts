@@ -42,6 +42,9 @@ export interface Config {
   // local state files
   earningsFile: string;
   meterFile: string;
+  // earnings bridge endpoint (the ablefy-light console consumes this)
+  earningsServe: boolean;
+  earningsPort: number;
 }
 
 /** Read configuration from the environment, applying slice-1 defaults. */
@@ -74,5 +77,7 @@ export function loadConfig(): Config {
     coachModel: process.env.COACH_MODEL || "claude-haiku-4-5-20251001",
     earningsFile: resolveHome(process.env.EARNINGS_FILE ?? path.join(stateDir, "earnings.json")),
     meterFile: resolveHome(process.env.METER_FILE ?? path.join(stateDir, "meter.json")),
+    earningsServe: process.env.EARNINGS_SERVE === "1" || process.env.EARNINGS_SERVE === "true",
+    earningsPort: num("EARNINGS_PORT", 7654),
   };
 }

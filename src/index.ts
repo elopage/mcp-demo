@@ -12,6 +12,7 @@ import { FakeCoach } from "./coach/fakeCoach.js";
 import { AnthropicCoach } from "./coach/anthropicCoach.js";
 import { OpenAICompatibleCoach } from "./coach/openaiCoach.js";
 import { FileEarningsSink } from "./earnings/fileSink.js";
+import { startEarningsServer } from "./earningsServer.js";
 
 async function main(): Promise<void> {
   const config = loadConfig();
@@ -35,6 +36,9 @@ async function main(): Promise<void> {
   const server = buildServer(deps);
   const transport = new StdioServerTransport();
   await server.connect(transport);
+
+  // Optionally serve the earnings bridge endpoint alongside the MCP (EARNINGS_SERVE=1).
+  if (config.earningsServe) startEarningsServer(config);
 
   // NB: never log to stdout — it's the JSON-RPC channel. stderr only.
   console.error(`[ablefy-mcp] ready · rail=${config.paymentRail} coach=${config.coachLlm}`);

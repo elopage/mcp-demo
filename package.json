@@ -17,7 +17,9 @@
     "wallet:info": "node --env-file-if-exists=.env scripts/wallet-info.mjs",
     "algo:check": "node --env-file-if-exists=.env scripts/algo-selfcheck.mjs",
     "pay:test": "node --env-file=.env scripts/pay-test.mjs",
-    "coach:test": "node --env-file-if-exists=.env scripts/coach-test.mjs"
+    "coach:test": "node --env-file-if-exists=.env scripts/coach-test.mjs",
+    "earnings:serve": "node --env-file-if-exists=.env scripts/earnings-serve.mjs",
+    "earnings:check": "node scripts/earnings-check.mjs"
   },
   "engines": {
     "node": ">=20"
