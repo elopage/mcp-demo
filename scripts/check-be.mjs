@@ -30,8 +30,12 @@ const transport = new StdioClientTransport({
     MONTHLY_CAP: "9.00",
     EARNINGS_FILE: path.join(tmp, "earnings.json"),
     METER_FILE: path.join(tmp, "meter.json"),
+    FLAT_ACCESS_FILE: path.join(tmp, "flat-access.json"),
   },
 });
+
+// example.com is rejected by ablefy's email validator; flat grant needs a deliverable address.
+const BUYER = "mcp.check.buyer@gmail.com";
 
 const client = new Client({ name: "be-check", version: "1.0.0" });
 await client.connect(transport);
@@ -53,10 +57,10 @@ try {
   const trial = await call("ablefy_ask_coach", { product_id: pid, question: "How do I capture on mobile?" });
   check("ask_coach trial works over real backend", /Paid €0\.10/.test(trial) && /trial/.test(trial), trial);
 
-  const flat = await call("ablefy_pay_flat", { product_id: pid, buyer_email: "buyer@example.com" });
-  check("pay_flat grants access", /Flat access granted/.test(flat), flat);
+  const flat = await call("ablefy_pay_flat", { product_id: pid, buyer_email: BUYER });
+  check("pay_flat writes a real MembershipSession", /Flat access granted/.test(flat) && /real MembershipSession `\d+`/.test(flat), flat);
 
-  const flatAsk = await call("ablefy_ask_coach", { product_id: pid, question: "More?", buyer_email: "buyer@example.com" });
+  const flatAsk = await call("ablefy_ask_coach", { product_id: pid, question: "More?", buyer_email: BUYER });
   check("flat buyer asks free", /flat · unlimited/.test(flatAsk) && !/Paid €/.test(flatAsk), flatAsk);
 } finally {
   await client.close();

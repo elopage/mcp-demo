@@ -69,7 +69,8 @@ npm run desktop:verify      # sanity check: should say "6 tools"
    - Claude surfaces **Lena AI — Systems Coach** with both prices.
    - You ask a question → **approve the €0.10** → answer comes back with a 🔗 explorer link (the real on-chain payment).
    - "Let me keep asking, **cap me at €2/month**" → approve once → ask more, the cap ticks down.
-   - "Or just give me unlimited" → **€9 flat** (comped).
+   - "Or just give me unlimited" → **€9 flat** (comped) → writes a **real `MembershipSession`** in
+     ablefy's database (the proof below), and every later question is free.
 5. **Model:** use **Sonnet 4.5 or Opus** (not Fable 5 — it's been flaky and skips the tools).
 
 ---
@@ -96,13 +97,24 @@ Open **http://localhost:3002/cabinet/agentic/ablefylight**. Ask a paid question 
 # 1. the real row in ablefy's Postgres
 docker exec elopage-rails-app-1 bin/rails runner "puts ActiveRecord::Base.connection.execute(%q{SELECT id,username FROM sellers WHERE username='the-systems-studio'}).to_a.inspect"
 # 2. the backend API serving it
-curl -s "http://localhost:3000/v1/shop/the-systems-studio/products?form=service" | python3 -m json.tool
+curl -s "http://localhost:3000/v1/shop/the-systems-studio/products?form=membership" | python3 -m json.tool
 # 3. the MCP pointed at that backend  → ABLEFY_API_BASE = http://localhost:3000
 ```
 …then in Claude, find the coach → same id/name/price. Or, punchier: edit the DB live
 (`Product.find(1).update!(name: '…')`) and re-ask — the chat shows the change.
 
 **The on-chain payment:** the 🔗 link in each answer opens the real testnet transaction.
+
+**The flat purchase writes a real DB row:** a `€9 flat` purchase drives ablefy's genuine
+access-grant spine — a comped order → `MembershipSession` (the same access row a normal
+checkout writes). After buying flat in the demo, SELECT it back (use the buyer's email):
+```bash
+docker exec -e CHECK_PRODUCT_ID=1 -e CHECK_BUYER_EMAIL="<buyer email>" -i \
+  elopage-rails-app-1 bin/rails runner - < seed/check_flat.rb
+# → HAS_FLAT_ACCESS=true MEMBERSHIP_SESSION_ID=<id>
+```
+(Note: the coach is a **membership** product so the grant writes a `MembershipSession`; the
+buyer email must be a deliverable address — ablefy's validator rejects `example.com`.)
 
 ---
 
@@ -121,7 +133,7 @@ curl -s "http://localhost:3000/v1/shop/the-systems-studio/products?form=service"
 ## Handy commands
 | Command | Does |
 |---|---|
-| `npm run reset` | fresh trial, €9 cap, €0 earnings |
+| `npm run reset` | fresh trial, €9 cap, €0 earnings, flat access re-purchasable |
 | `npm run desktop:config` | write the ablefy server into Desktop (quit Desktop first) |
 | `npm run desktop:verify` | confirm the server boots with 6 tools |
 | `npm run demo:e2e -- "question"` | run the full paid flow from the terminal (real tx + answer) |

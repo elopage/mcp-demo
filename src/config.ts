@@ -20,6 +20,8 @@ export interface Config {
   ablefyApiBase: string;
   sellerToken: string;
   coachSlug: string;
+  coachForm: string; // product form the coach is sold as (membership → flat grant writes a MembershipSession)
+  railsContainer: string; // docker container running the local ablefy Rails app (flat-grant spine)
   // pricing / meter — the MCP owns these
   pricePerQ: number;
   monthlyCap: number;
@@ -42,6 +44,7 @@ export interface Config {
   // local state files
   earningsFile: string;
   meterFile: string;
+  flatAccessFile: string; // write-through cache of real flat grants (membership_session id by buyer)
   // earnings bridge endpoint (the ablefy-light console consumes this)
   earningsServe: boolean;
   earningsPort: number;
@@ -56,6 +59,8 @@ export function loadConfig(): Config {
     ablefyApiBase: process.env.ABLEFY_API_BASE || "http://localhost:3000",
     sellerToken: process.env.ABLEFY_SELLER_TOKEN ?? "",
     coachSlug: process.env.COACH_PRODUCT_SLUG || "the-systems-studio",
+    coachForm: process.env.COACH_PRODUCT_FORM || "membership",
+    railsContainer: process.env.ABLEFY_RAILS_CONTAINER || "elopage-rails-app-1",
     pricePerQ: num("PRICE_PER_Q", 0.1),
     monthlyCap: num("MONTHLY_CAP", 9.0),
     currency: process.env.CURRENCY || "EUR",
@@ -77,6 +82,7 @@ export function loadConfig(): Config {
     coachModel: process.env.COACH_MODEL || "claude-haiku-4-5-20251001",
     earningsFile: resolveHome(process.env.EARNINGS_FILE ?? path.join(stateDir, "earnings.json")),
     meterFile: resolveHome(process.env.METER_FILE ?? path.join(stateDir, "meter.json")),
+    flatAccessFile: resolveHome(process.env.FLAT_ACCESS_FILE ?? path.join(stateDir, "flat-access.json")),
     earningsServe: process.env.EARNINGS_SERVE === "1" || process.env.EARNINGS_SERVE === "true",
     earningsPort: num("EARNINGS_PORT", 7654),
   };
