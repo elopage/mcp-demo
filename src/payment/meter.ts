@@ -47,6 +47,10 @@ export class Meter {
 
   /** Fetch the allowance, resetting the spend window if the month rolled over. */
   private get(productId: string): Allowance | undefined {
+    // Re-read the file on every access so it's the source of truth: a
+    // `rm meter.json` resets the live demo with no server restart, and separate
+    // processes (Desktop MCP, CLI scripts) stay consistent.
+    this.state = this.load();
     const a = this.state[productId];
     if (a && a.month !== currentMonth()) {
       a.month = currentMonth();

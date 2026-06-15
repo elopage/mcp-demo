@@ -19,7 +19,8 @@ const find = await call("ablefy_find_coach", { query: "I need a real second-brai
 console.log("\n=== ablefy_find_coach ===\n" + find);
 
 const pid = (find.match(/product_id\D*(\d+)/i) || [])[1] || "1";
-const ans = await call("ablefy_ask_coach", { product_id: pid, question: "I keep abandoning my note system. How do I make a weekly review stick?" });
+const question = process.argv[2] || "I keep abandoning my note system. How do I make a weekly review stick?";
+const ans = await call("ablefy_ask_coach", { product_id: pid, question });
 console.log("\n=== ablefy_ask_coach (real €0.10 on-chain + real coach) ===\n" + ans);
 
 console.log("\n=== ablefy_creator_earnings ===\n" + (await call("ablefy_creator_earnings", {})));

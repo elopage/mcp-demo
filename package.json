@@ -23,7 +23,8 @@
     "desktop:config": "node --env-file=.env scripts/desktop-config.mjs",
     "demo:e2e": "node --env-file=.env scripts/demo-e2e.mjs",
     "desktop:verify": "node scripts/desktop-verify.mjs",
-    "idempotency:check": "node scripts/idempotency-check.mjs"
+    "idempotency:check": "node scripts/idempotency-check.mjs",
+    "reset": "rm -f ~/.ablefy-mcp/meter.json ~/.ablefy-mcp/earnings.json && echo 'reset: fresh trial, full €9 cap, €0 earnings'"
   },
   "engines": {
     "node": ">=20"
