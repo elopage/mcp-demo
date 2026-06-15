@@ -4,7 +4,9 @@
 > Read at the start of every session, update at the end. Lives on `master`.
 
 ## Shipped — built, hardened, and VALIDATED LIVE in Claude Desktop
-Branch `1871_mac_mcp_server` (PR → master: https://github.com/elopage/mcp-demo/pull/1).
+Slices 1–4b **MERGED to master** (PR #1: https://github.com/elopage/mcp-demo/pull/1).
+**Slice 2b** (the real flat-grant spine, below) is built + verified + pushed on branch
+`1871_mac_mcp_server`, **PR #2 pending**: https://github.com/elopage/mcp-demo/pull/2.
 The full arc ran end-to-end in a real Desktop chat: discover → trial €0.10 → buyer-capped
 allowance → flat → coach answer → (bridge) earnings in the console.
 
@@ -39,7 +41,7 @@ allowance → flat → coach answer → (bridge) earnings in the console.
 - Verified serving; reload the console to re-pull `/earnings`. Seam: `GET http://127.0.0.1:7654/earnings`.
 
 ## Next
-- **Merge the two PRs once reviewed** — mcp-demo#1 (→ master, now incl. slice 2b) + elopage#7087 (bridge consumer).
+- **Merge the open PRs once reviewed** — mcp-demo#2 (slice 2b → master; #1 already merged) + elopage#7087 (bridge consumer).
 - Optional polish: a `flat:proof` npm script (wraps `seed/check_flat.rb`) for the demo's SELECT beat;
   prune accumulated dev-DB demo rows if a pristine DB is wanted (discover already shows only the one coach).
 
