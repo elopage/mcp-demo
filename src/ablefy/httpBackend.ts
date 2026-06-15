@@ -53,7 +53,7 @@ export class HttpAblefyBackend implements AblefyBackend {
       name: p.name,
       creator: this.creator,
       studio: this.studio,
-      description: p.description || p.short_description || "",
+      description: (p.description || p.short_description || "").replace(/<[^>]*>/g, "").trim(),
       pricePerQuestion: this.cfg.pricePerQ, // MCP-owned meter
       monthlyCap: this.cfg.monthlyCap, // MCP-owned cap
       flatPrice, // the ablefy product's price

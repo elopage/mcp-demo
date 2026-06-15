@@ -85,8 +85,8 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
       const remaining = deps.meter.remaining(product_id, cap);
       const onchain = receipt.assetAmount != null ? ` (${receipt.assetAmount} ${receipt.assetUnit})` : "";
       const proof =
-        `Paid ${euro(price, currency)}${onchain} on-chain via ${receipt.rail} — tx \`${receipt.txId}\`` +
-        (receipt.explorerUrl ? `\n${receipt.explorerUrl}` : "");
+        `💸 **Paid ${euro(price, currency)}${onchain} on-chain** via ${receipt.rail} — tx \`${receipt.txId}\`` +
+        (receipt.explorerUrl ? `\n🔗 Verify: ${receipt.explorerUrl}` : "");
       const footer = isTrial
         ? `\n\n*(that was your trial — ${euro(remaining, currency)} left of the ${euro(cap, currency)} cap. ` +
           `Authorize the allowance to keep asking without re-approving each time.)*`
