@@ -25,7 +25,7 @@
     "desktop:verify": "node scripts/desktop-verify.mjs",
     "idempotency:check": "node scripts/idempotency-check.mjs",
     "cap:check": "node scripts/cap-check.mjs",
-    "reset": "rm -f ~/.ablefy-mcp/meter.json ~/.ablefy-mcp/earnings.json && echo 'reset: fresh trial, full €9 cap, €0 earnings'"
+    "reset": "rm -f ~/.ablefy-mcp/meter.json ~/.ablefy-mcp/earnings.json ~/.ablefy-mcp/flat-access.json && echo 'reset: fresh trial, full €9 cap, €0 earnings, flat access re-purchasable (DB row reused if still present)'"
   },
   "engines": {
     "node": ">=20"

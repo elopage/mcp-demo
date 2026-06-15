@@ -1,8 +1,13 @@
 # Seed the LOCAL ablefy backend with the demo's creator + coaching product.
 #
 #   Lena Brandt / "The Systems Studio"  (slug: the-systems-studio, can_sell)
-#   └─ "Lena AI — Systems Coach"        (service product, active, sellable via shop)
+#   └─ "Lena AI — Systems Coach"        (MEMBERSHIP product, active, sellable via shop)
 #      └─ one-time €9 pricing plan       (the flat-mode price)
+#
+# The coach is a *membership* product on purpose: flat mode grants unlimited access by
+# writing a real MembershipSession (ablefy's access primitive), and only membership-form
+# products create one (Sellable#process_membership_session! is gated on is_membership?).
+# Discover surfaces it via GET /v1/shop/{slug}/products?form=membership. (See seed/grant_flat.rb.)
 #   + an API key (bearer token) for the MCP to call the shop API
 #
 # Run against the running local container (NEVER production):
@@ -50,6 +55,7 @@ end
 # can_sell can be guarded by callbacks; force it so the shop scope includes the product.
 seller.update_column(:can_sell, true) unless seller.can_sell?
 
+MEMBERSHIP = Product.forms[:membership]
 product = seller.products.where(name: PRODUCT_NAME).first
 if product.nil?
   pricing_plan = create(
@@ -57,17 +63,32 @@ if product.nil?
     prefs: { price: PRICE, use_preauthorization: true }
   )
   product = create(
-    :product, :service,
+    :product,
     seller: seller,
     name: PRODUCT_NAME,
     description: DESCRIPTION,
+    form: MEMBERSHIP,
     active: true,
     can_be_sold_via_shop: true,
+    display_price: PRICE,
     pricing_plans: [pricing_plan]
   )
   puts "[seed] created product ##{product.id} form=#{product.form} review_passed=#{product.review_passed?}"
 else
-  puts "[seed] reusing product ##{product.id}"
+  # Ensure the coach is a sellable, public membership (flat access → MembershipSession
+  # needs is_membership?; discover gates on `private`, see below). Bump updated_at so the
+  # shop endpoint's 1-hour, max(updated_at)-keyed cache invalidates (update_columns alone won't).
+  product.update_columns(form: MEMBERSHIP, active: true, can_be_sold_via_shop: true,
+                         private: false, display_price: PRICE, updated_at: Time.current)
+  puts "[seed] reusing product ##{product.id} form=#{product.form} (ensured membership/public)"
+end
+
+# Keep discover clean: one coach. The public shop list (GET /v1/shop/{slug}/products) filters
+# only by form + `is_private(false)` (for_shop is a no-op without ?for_shop=true), so retire any
+# other coach-named products by marking them PRIVATE — and bump updated_at to bust the shop cache.
+seller.products.where.not(id: product.id).where("name ILIKE ?", "%Systems Coach%").find_each do |p|
+  p.update_columns(private: true, can_be_sold_via_shop: false, active: false, updated_at: Time.current)
+  puts "[seed] retired stray coach product ##{p.id} (form=#{p.form}) → private"
 end
 
 api_key = ApiKey.create!(form: :api, user: seller.user)

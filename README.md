@@ -13,7 +13,7 @@ for unlimited — while the creator's euro earnings surface in their ablefy-ligh
 |---|---|---|
 | **1** | MCP server + 6 tools, end-to-end on **fakes** | ✅ built — runs in Claude Desktop, 12/12 smoke |
 | **2a** | Real **discover** vs the live ablefy BE + Lena **seed** | ✅ built — 6/6 vs `localhost:3000` |
-| 2b | Real flat → `charge_or_give_access!` → `MembershipSession` | ⏸️ deferred (simulated fallback; micro is the hero) |
+| **2b** | Real flat → comped order → `MembershipSession` (coach = membership product) | ✅ built — `pay_flat` writes a real row, SELECT-provable; 6/6 vs `localhost:3000` |
 | **3** | Real **Algorand testnet** micropayment (native ALGO) | ✅ built — connectivity + sign verified; real tx needs a funded wallet |
 | **4** | Real **Anthropic coach** | ✅ built — wiring verified; live call needs `ANTHROPIC_API_KEY` |
 | 4b | Cross-repo **earnings-bridge consumer** (elopage console) | ⏳ pending (emitter shipped in slice 1) |
