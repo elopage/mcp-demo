@@ -30,7 +30,9 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
       const coach = await deps.backend.getCoach(product_id);
       if (!coach) return textResult(`No coach found for product_id ${product_id}.`);
       const buyer = buyer_email ?? DEFAULT_BUYER;
-      const { pricePerQuestion: price, monthlyCap: cap, currency } = coach;
+      const { pricePerQuestion: price, currency } = coach;
+      // Use the buyer-chosen cap (set at authorize) if present, else the coach default.
+      const cap = deps.meter.capFor(product_id, coach.monthlyCap);
 
       // Flat (unlimited) — no per-question charge.
       if (await deps.backend.hasFlatAccess(product_id, buyer)) {

@@ -24,6 +24,7 @@
     "demo:e2e": "node --env-file=.env scripts/demo-e2e.mjs",
     "desktop:verify": "node scripts/desktop-verify.mjs",
     "idempotency:check": "node scripts/idempotency-check.mjs",
+    "cap:check": "node scripts/cap-check.mjs",
     "reset": "rm -f ~/.ablefy-mcp/meter.json ~/.ablefy-mcp/earnings.json && echo 'reset: fresh trial, full €9 cap, €0 earnings'"
   },
   "engines": {

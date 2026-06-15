@@ -93,6 +93,11 @@ export class Meter {
     return Math.max(0, round2(monthlyCap - spent));
   }
 
+  /** The buyer-chosen cap stored at authorization, else the provided default. */
+  capFor(productId: string, defaultCap: number): number {
+    return this.get(productId)?.monthlyCap ?? defaultCap;
+  }
+
   /** Would a charge of `amount` stay within the cap? */
   canCharge(productId: string, amount: number, monthlyCap: number): boolean {
     return this.remaining(productId, monthlyCap) + 1e-9 >= amount;
