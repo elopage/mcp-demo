@@ -9,6 +9,7 @@ import { MockRail } from "./payment/mockRail.js";
 import { AlgorandRail } from "./payment/algorandRail.js";
 import { Meter } from "./payment/meter.js";
 import { FakeCoach } from "./coach/fakeCoach.js";
+import { AnthropicCoach } from "./coach/anthropicCoach.js";
 import { FileEarningsSink } from "./earnings/fileSink.js";
 
 async function main(): Promise<void> {
@@ -21,7 +22,7 @@ async function main(): Promise<void> {
     backend: config.backendKind === "http" ? new HttpAblefyBackend(config) : new FakeAblefyBackend(config),
     rail: config.paymentRail === "algorand" ? new AlgorandRail(config) : new MockRail(),
     meter: new Meter(config.meterFile),
-    coach: new FakeCoach(),
+    coach: config.coachLlm === "anthropic" ? new AnthropicCoach(config) : new FakeCoach(),
     earnings: new FileEarningsSink(config.earningsFile, config.currency),
   };
 

@@ -16,12 +16,14 @@
     "wallet:new": "node scripts/wallet-new.mjs",
     "wallet:info": "node --env-file-if-exists=.env scripts/wallet-info.mjs",
     "algo:check": "node --env-file-if-exists=.env scripts/algo-selfcheck.mjs",
-    "pay:test": "node --env-file=.env scripts/pay-test.mjs"
+    "pay:test": "node --env-file=.env scripts/pay-test.mjs",
+    "coach:test": "node --env-file-if-exists=.env scripts/coach-test.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.1",
     "@modelcontextprotocol/sdk": "^1.29.0",
     "algosdk": "^3.6.0",
     "zod": "^4.4.3"
