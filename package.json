@@ -11,13 +11,19 @@
     "build": "tsc",
     "dev": "tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "smoke": "node scripts/smoke.mjs"
+    "smoke": "node scripts/smoke.mjs",
+    "check:be": "node scripts/check-be.mjs",
+    "wallet:new": "node scripts/wallet-new.mjs",
+    "wallet:info": "node --env-file-if-exists=.env scripts/wallet-info.mjs",
+    "algo:check": "node --env-file-if-exists=.env scripts/algo-selfcheck.mjs",
+    "pay:test": "node --env-file=.env scripts/pay-test.mjs"
   },
   "engines": {
     "node": ">=20"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.29.0",
+    "algosdk": "^3.6.0",
     "zod": "^4.4.3"
   },
   "devDependencies": {

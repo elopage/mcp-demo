@@ -25,6 +25,8 @@ export interface PaymentReceipt {
   amount: number; // euro-denominated amount charged
   currency: string; // "EUR"
   asset: string; // settlement asset: "MOCK" | "ALGO" | "USDC"
+  assetAmount?: number; // amount moved on-chain, in the asset's display unit
+  assetUnit?: string; // e.g. "ALGO"
   timestamp: string; // ISO 8601
 }
 

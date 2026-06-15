@@ -74,8 +74,9 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
 
       const answer = await deps.coach.answer(coach, question);
       const remaining = deps.meter.remaining(product_id, cap);
+      const onchain = receipt.assetAmount != null ? ` (${receipt.assetAmount} ${receipt.assetUnit})` : "";
       const proof =
-        `Paid ${euro(price, currency)} on-chain via ${receipt.rail} — tx \`${receipt.txId}\`` +
+        `Paid ${euro(price, currency)}${onchain} on-chain via ${receipt.rail} — tx \`${receipt.txId}\`` +
         (receipt.explorerUrl ? `\n${receipt.explorerUrl}` : "");
       const footer = isTrial
         ? `\n\n*(that was your trial — ${euro(remaining, currency)} left of the ${euro(cap, currency)} cap. ` +
