@@ -7,17 +7,19 @@ for unlimited — while the creator's euro earnings surface in their ablefy-ligh
 > *"ablefy is the payment + access layer for agent-mediated creator commerce — including
 > agent-native micropayments."* — Act 3 of the agentic-future arc. Full design: **Jira MAC-1871.**
 
-## Status — slice 1 of 4 (built)
+## Status
 
 | Slice | Scope | State |
 |---|---|---|
-| **1** | MCP server + all 6 tools, end-to-end on **fakes** (in-memory ablefy, mock rail, canned coach) | ✅ **built** — runs in Claude Desktop today |
-| 2 | Real **local ablefy Rails backend** (docker-compose + seed) behind discover + flat mode | next |
-| 3 | Real **Algorand testnet** micropayment + on-chain meter/cap | next |
-| 4 | Real **LLM** coach + the cross-repo **earnings bridge** consumer (elopage side) | next |
+| **1** | MCP server + 6 tools, end-to-end on **fakes** | ✅ built — runs in Claude Desktop, 12/12 smoke |
+| **2a** | Real **discover** vs the live ablefy BE + Lena **seed** | ✅ built — 6/6 vs `localhost:3000` |
+| 2b | Real flat → `charge_or_give_access!` → `MembershipSession` | ⏸️ deferred (simulated fallback; micro is the hero) |
+| **3** | Real **Algorand testnet** micropayment (native ALGO) | ✅ built — connectivity + sign verified; real tx needs a funded wallet |
+| **4** | Real **Anthropic coach** | ✅ built — wiring verified; live call needs `ANTHROPIC_API_KEY` |
+| 4b | Cross-repo **earnings-bridge consumer** (elopage console) | ⏳ pending (emitter shipped in slice 1) |
 
-Slice 1 swaps to real implementations purely by config — every dependency sits behind an
-interface (`AblefyBackend`, `PaymentRail`, `CoachLLM`, `EarningsSink`).
+Every dependency sits behind an interface (`AblefyBackend`, `PaymentRail`, `CoachLLM`,
+`EarningsSink`) and swaps fake↔real purely by config — see [.env.example](.env.example).
 
 ## Quickstart
 
