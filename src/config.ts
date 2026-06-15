@@ -15,7 +15,8 @@ function num(name: string, fallback: number): number {
 }
 
 export interface Config {
-  // ablefy backend (real in slice 2; the fake ignores these)
+  // ablefy backend
+  backendKind: "fake" | "http";
   ablefyApiBase: string;
   sellerToken: string;
   coachSlug: string;
@@ -38,6 +39,7 @@ export interface Config {
 export function loadConfig(): Config {
   const stateDir = path.join(os.homedir(), ".ablefy-mcp");
   return {
+    backendKind: process.env.ABLEFY_BACKEND === "http" ? "http" : "fake",
     ablefyApiBase: process.env.ABLEFY_API_BASE ?? "http://localhost:3000",
     sellerToken: process.env.ABLEFY_SELLER_TOKEN ?? "",
     coachSlug: process.env.COACH_PRODUCT_SLUG ?? "the-systems-studio",
