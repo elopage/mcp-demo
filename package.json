@@ -19,7 +19,10 @@
     "pay:test": "node --env-file=.env scripts/pay-test.mjs",
     "coach:test": "node --env-file-if-exists=.env scripts/coach-test.mjs",
     "earnings:serve": "node --env-file-if-exists=.env scripts/earnings-serve.mjs",
-    "earnings:check": "node scripts/earnings-check.mjs"
+    "earnings:check": "node scripts/earnings-check.mjs",
+    "desktop:config": "node --env-file=.env scripts/desktop-config.mjs",
+    "demo:e2e": "node --env-file=.env scripts/demo-e2e.mjs",
+    "desktop:verify": "node scripts/desktop-verify.mjs"
   },
   "engines": {
     "node": ">=20"

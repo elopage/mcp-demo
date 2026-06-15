@@ -33,6 +33,7 @@ export class AnthropicCoach implements CoachLLM {
       .map((block) => (block.type === "text" ? block.text : ""))
       .join("")
       .trim();
-    return text || "(the coach had no answer)";
+    if (!text) throw new Error("Anthropic returned an empty answer");
+    return text;
   }
 }

@@ -58,7 +58,18 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
         );
       }
 
-      // Charge the micropayment, book the earning, then answer.
+      // Generate the answer FIRST — if the coach fails, the buyer must NOT be charged.
+      let answer: string;
+      try {
+        answer = await deps.coach.answer(coach, question);
+      } catch (err) {
+        return textResult(
+          `The coach couldn't answer just now, so you were **not** charged — please try again. ` +
+            `(${(err as Error).message})`,
+        );
+      }
+
+      // Answer in hand → take the micropayment and book the earning.
       const receipt = await deps.rail.charge(price, currency, `${coach.name}: ${question.slice(0, 48)}`);
       deps.meter.recordCharge(product_id, price, receipt.txId, price, cap);
       await deps.earnings.record({
@@ -71,8 +82,6 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
         receipt,
         timestamp: new Date().toISOString(),
       });
-
-      const answer = await deps.coach.answer(coach, question);
       const remaining = deps.meter.remaining(product_id, cap);
       const onchain = receipt.assetAmount != null ? ` (${receipt.assetAmount} ${receipt.assetUnit})` : "";
       const proof =

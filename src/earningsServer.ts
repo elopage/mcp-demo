@@ -49,6 +49,11 @@ export function startEarningsServer(cfg: Config, port: number = cfg.earningsPort
     res.end();
   });
 
+  // A port conflict (or any listen error) must NOT take down the MCP — the earnings
+  // endpoint is a side feature. Log and carry on; the tools keep working.
+  server.on("error", (err) => {
+    console.error(`[ablefy-mcp] earnings endpoint disabled (${(err as Error).message}) — MCP continues`);
+  });
   server.listen(port, "127.0.0.1", () => {
     console.error(`[ablefy-mcp] earnings endpoint → http://127.0.0.1:${port}/earnings`);
   });

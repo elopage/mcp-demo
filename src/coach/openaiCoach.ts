@@ -41,7 +41,9 @@ export class OpenAICompatibleCoach implements CoachLLM {
       throw new Error(`LLM proxy ${res.status}: ${(await res.text()).slice(0, 200)}`);
     }
     const json = (await res.json()) as { choices?: { message?: { content?: string } }[] };
-    const text = json?.choices?.[0]?.message?.content;
-    return (typeof text === "string" ? text.trim() : "") || "(the coach had no answer)";
+    const raw = json?.choices?.[0]?.message?.content;
+    const text = typeof raw === "string" ? raw.trim() : "";
+    if (!text) throw new Error("LLM proxy returned an empty answer");
+    return text;
   }
 }
