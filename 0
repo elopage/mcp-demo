@@ -1,6 +1,0 @@
-
-> ablefy-mcp@0.1.0 wallet:info
-> node --env-file-if-exists=.env scripts/wallet-info.mjs # confirm the buyer balance ALGO
-
-PVC3NTX2UJUVPIVXJT3XYZSBTNXVJU2NDGPYOW72HQTP3URXFEWWMTTBS4
-  balance: 10 ALGO
