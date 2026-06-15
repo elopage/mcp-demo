@@ -1,0 +1,28 @@
+{
+  "name": "ablefy-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ablefy 'pay-to-ask AI coach' agent-commerce demo — buyer-side MCP server (MAC-1871)",
+  "type": "module",
+  "bin": {
+    "ablefy-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "smoke": "node scripts/smoke.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
