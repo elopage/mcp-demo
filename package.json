@@ -22,7 +22,8 @@
     "earnings:check": "node scripts/earnings-check.mjs",
     "desktop:config": "node --env-file=.env scripts/desktop-config.mjs",
     "demo:e2e": "node --env-file=.env scripts/demo-e2e.mjs",
-    "desktop:verify": "node scripts/desktop-verify.mjs"
+    "desktop:verify": "node scripts/desktop-verify.mjs",
+    "idempotency:check": "node scripts/idempotency-check.mjs"
   },
   "engines": {
     "node": ">=20"

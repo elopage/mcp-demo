@@ -9,7 +9,7 @@ interface Allowance {
   monthlyCap: number;
   month: string; // "YYYY-MM" the spend window belongs to
   spentThisMonth: number;
-  charges: { amount: number; txId: string; at: string }[];
+  charges: { amount: number; txId: string; at: string; question?: string }[];
 }
 
 type MeterState = Record<string, Allowance>;
@@ -95,7 +95,14 @@ export class Meter {
   }
 
   /** Book a settled charge against the month's spend. */
-  recordCharge(productId: string, amount: number, txId: string, pricePerQ: number, monthlyCap: number): void {
+  recordCharge(
+    productId: string,
+    amount: number,
+    txId: string,
+    pricePerQ: number,
+    monthlyCap: number,
+    question?: string,
+  ): void {
     const a = this.get(productId) ?? {
       authorized: false,
       pricePerQ,
@@ -105,9 +112,27 @@ export class Meter {
       charges: [],
     };
     a.spentThisMonth = round2(a.spentThisMonth + amount);
-    a.charges.push({ amount, txId, at: new Date().toISOString() });
+    a.charges.push({ amount, txId, at: new Date().toISOString(), question });
     this.state[productId] = a;
     this.save();
+  }
+
+  /**
+   * The most recent charge for the same question within `windowMs` — the
+   * idempotency hook so a re-asked question isn't charged twice.
+   */
+  findRecentCharge(productId: string, question: string, windowMs: number): { txId: string; at: string } | undefined {
+    const a = this.get(productId);
+    if (!a) return undefined;
+    const norm = question.trim().toLowerCase();
+    const now = Date.now();
+    for (let i = a.charges.length - 1; i >= 0; i--) {
+      const c = a.charges[i];
+      if (c.question && c.question.trim().toLowerCase() === norm && now - Date.parse(c.at) <= windowMs) {
+        return { txId: c.txId, at: c.at };
+      }
+    }
+    return undefined;
   }
 }
 

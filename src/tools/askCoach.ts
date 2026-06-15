@@ -69,9 +69,21 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
         );
       }
 
-      // Answer in hand → take the micropayment and book the earning.
+      // Idempotency: if this exact question was charged moments ago (e.g. the model
+      // re-asked), answer again but DON'T charge twice — and say so, by design.
+      const priorCharge = deps.meter.findRecentCharge(product_id, question, 2 * 60 * 1000);
+      if (priorCharge) {
+        const left = deps.meter.remaining(product_id, cap);
+        return textResult(
+          `${answer}\n\n*😊 You already paid ${euro(price, currency)} for this exact question a moment ago, ` +
+            `so this one's on the house — no double charge. (Original payment: tx \`${priorCharge.txId}\`.) ` +
+            `${euro(left, currency)} still left of your ${euro(cap, currency)} cap.*`,
+        );
+      }
+
+      // Answer in hand, not a duplicate → take the micropayment and book the earning.
       const receipt = await deps.rail.charge(price, currency, `${coach.name}: ${question.slice(0, 48)}`);
-      deps.meter.recordCharge(product_id, price, receipt.txId, price, cap);
+      deps.meter.recordCharge(product_id, price, receipt.txId, price, cap, question);
       await deps.earnings.record({
         productId: product_id,
         seller: coach.creator,
