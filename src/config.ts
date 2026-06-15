@@ -34,8 +34,10 @@ export interface Config {
   microAlgosPerQ: number;
   algoExplorerBase: string;
   // coach LLM
-  coachLlm: "fake" | "anthropic";
+  coachLlm: "fake" | "anthropic" | "litellm";
   anthropicApiKey: string;
+  llmBaseUrl: string;
+  llmApiKey: string;
   coachModel: string;
   // local state files
   earningsFile: string;
@@ -62,8 +64,13 @@ export function loadConfig(): Config {
     creatorAddress: process.env.CREATOR_ADDRESS ?? "",
     microAlgosPerQ: num("ALGO_MICROALGOS_PER_Q", 1000),
     algoExplorerBase: process.env.ALGO_EXPLORER_BASE || "https://lora.algokit.io/testnet/transaction/",
-    coachLlm: process.env.COACH_LLM === "anthropic" ? "anthropic" : "fake",
+    coachLlm:
+      process.env.COACH_LLM === "anthropic" || process.env.COACH_LLM === "litellm"
+        ? process.env.COACH_LLM
+        : "fake",
     anthropicApiKey: process.env.ANTHROPIC_API_KEY ?? "",
+    llmBaseUrl: process.env.LLM_BASE_URL ?? "",
+    llmApiKey: process.env.LLM_API_KEY ?? "",
     coachModel: process.env.COACH_MODEL || "claude-haiku-4-5-20251001",
     earningsFile: resolveHome(process.env.EARNINGS_FILE ?? path.join(stateDir, "earnings.json")),
     meterFile: resolveHome(process.env.METER_FILE ?? path.join(stateDir, "meter.json")),

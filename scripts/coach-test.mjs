@@ -2,6 +2,7 @@
 // COACH_LLM=anthropic + ANTHROPIC_API_KEY in .env → real model; else the canned coach.
 import { loadConfig } from "../dist/config.js";
 import { AnthropicCoach } from "../dist/coach/anthropicCoach.js";
+import { OpenAICompatibleCoach } from "../dist/coach/openaiCoach.js";
 import { FakeCoach } from "../dist/coach/fakeCoach.js";
 
 const cfg = loadConfig();
@@ -20,7 +21,12 @@ const coach = {
   currency: cfg.currency,
 };
 
-const llm = cfg.coachLlm === "anthropic" ? new AnthropicCoach(cfg) : new FakeCoach();
+const llm =
+  cfg.coachLlm === "anthropic"
+    ? new AnthropicCoach(cfg)
+    : cfg.coachLlm === "litellm"
+      ? new OpenAICompatibleCoach(cfg)
+      : new FakeCoach();
 const question = process.argv[2] || "How should I structure capture on mobile vs my weekly review?";
 
 console.log(`coach=${cfg.coachLlm} model=${cfg.coachModel}`);
