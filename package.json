@@ -1,0 +1,44 @@
+{
+  "name": "ablefy-mcp",
+  "version": "0.1.0",
+  "private": true,
+  "description": "ablefy 'pay-to-ask AI coach' agent-commerce demo — buyer-side MCP server (MAC-1871)",
+  "type": "module",
+  "bin": {
+    "ablefy-mcp": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx watch src/index.ts",
+    "start": "node dist/index.js",
+    "smoke": "node scripts/smoke.mjs",
+    "check:be": "node scripts/check-be.mjs",
+    "wallet:new": "node scripts/wallet-new.mjs",
+    "wallet:info": "node --env-file-if-exists=.env scripts/wallet-info.mjs",
+    "algo:check": "node --env-file-if-exists=.env scripts/algo-selfcheck.mjs",
+    "pay:test": "node --env-file=.env scripts/pay-test.mjs",
+    "coach:test": "node --env-file-if-exists=.env scripts/coach-test.mjs",
+    "earnings:serve": "node --env-file-if-exists=.env scripts/earnings-serve.mjs",
+    "earnings:check": "node scripts/earnings-check.mjs",
+    "desktop:config": "node --env-file=.env scripts/desktop-config.mjs",
+    "demo:e2e": "node --env-file=.env scripts/demo-e2e.mjs",
+    "desktop:verify": "node scripts/desktop-verify.mjs",
+    "idempotency:check": "node scripts/idempotency-check.mjs",
+    "cap:check": "node scripts/cap-check.mjs",
+    "reset": "rm -f ~/.ablefy-mcp/meter.json ~/.ablefy-mcp/earnings.json && echo 'reset: fresh trial, full €9 cap, €0 earnings'"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.104.1",
+    "@modelcontextprotocol/sdk": "^1.29.0",
+    "algosdk": "^3.6.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.3",
+    "tsx": "^4.22.4",
+    "typescript": "^6.0.3"
+  }
+}
