@@ -7,9 +7,11 @@ are what you'll use day to day.
 ---
 
 ## What the demo shows
-In a normal Claude Desktop chat: discover Lena's AI coach → pay **€0.10/question** on a real
-Algorand testnet payment (capped, you choose the cap) → get a real coaching answer → or go
-**€9 flat**. Then her euro earnings show up in the ablefy-light console.
+In a normal Claude Desktop chat the connector appears as **"Ask Lena"** (creator mode, default).
+Discover Lena's AI coach → pay **€0.10/question** on a real Algorand testnet payment (capped,
+you choose the cap) → get a real coaching answer → or go **€9 flat**. Her euro earnings show up
+in the ablefy-light console. A buyer onboarding page is available at `http://127.0.0.1:7655/`
+(start with `WEB_SERVE=1` or `npm run web:serve`).
 
 The 4 moving parts:
 - **ablefy backend** (real Rails + Postgres) — runs locally in Docker, holds Lena's product. (discover)
@@ -34,6 +36,10 @@ cp .env.example .env        # then edit:
 #   LLM_BASE_URL          = https://litellm.ablefy.ai/v1
 #   LLM_API_KEY           = your litellm key
 #   COACH_MODEL           = bedrock-claude-sonnet-4-5
+# Optional overrides (defaults are fine for Story 2 demo):
+#   CONNECTOR_MODE        = creator (default) | marketplace
+#   CONNECTOR_NAME        = Ask Lena (default in creator mode)
+#   WEB_SERVE             = 1  (start buyer page on port 7655 alongside the MCP)
 ```
 
 **Backend** must be running (Docker): the container `elopage-rails-app-1` on `localhost:3000`.
@@ -60,7 +66,7 @@ npm run desktop:verify      # sanity check: should say "6 tools"
    ```
 2. **In Claude Desktop**, make sure the payment tools are set to **"Ask"** (not "Always allow"),
    so the approval pop-up shows — that's the human-in-the-loop beat. (Connectors → Manage
-   connectors → `ablefy` → set `ask_coach` / `authorize_allowance` / `pay_flat` to "Ask".)
+   connectors → `Ask Lena` → set `ask_coach` / `authorize_allowance` / `pay_flat` to "Ask".)
 3. **New chat**, paste the opening line:
    > I'm drowning in notes across Notion, Obsidian, and random docs. I want a real system for
    > my second brain, but every video says something different. Is there someone who actually
@@ -138,3 +144,5 @@ buyer email must be a deliverable address — ablefy's validator rejects `exampl
 | `npm run desktop:verify` | confirm the server boots with 6 tools |
 | `npm run demo:e2e -- "question"` | run the full paid flow from the terminal (real tx + answer) |
 | `npm run smoke` | offline logic check (no backend/chain/LLM) |
+| `npm run web:serve` | start buyer landing page at `http://127.0.0.1:7655/` (standalone, no MCP) |
+| `WEB_SERVE=1` in `.env` | start buyer page alongside the MCP (same process, via Desktop config) |

@@ -3,10 +3,23 @@
 > Live-state doc for the ablefy "pay-to-ask AI coach" agent-commerce demo (Jira MAC-1871).
 > Read at the start of every session, update at the end. Lives on `master`.
 
+## Shipped — Story 2 Chunk C: creator-mode framing + buyer onboarding page
+Branch `1871_mac_story2c_creator_mode`, **PR pending** → master.
+
+- **Creator-mode framing** (Slice 1) — server name = `"Ask Lena"` (default; override via `CONNECTOR_NAME`),
+  mode-conditional instructions ("direct line to Lena, don't shop around") + `findCoach` description
+  ("Get Lena's coach + pricing"), `query` param hidden from LLM in creator mode. Config:
+  `CONNECTOR_MODE=creator|marketplace`, `CONNECTOR_NAME=<override>`. Marketplace mode = current copy, unchanged.
+- **Buyer onboarding page** (Slice 2) — `startWebServer(deps)` at port 7655 (`WEB_PORT`), started via `WEB_SERVE=1`
+  or `npm run web:serve`. Serves `GET /` (HTML: coach card + two pricing plans + "Add to Claude" section with
+  copyable terminal commands), `GET /offer.json` (live prices from backend). Prices fetched from backend at
+  request-time so they can't drift. Target URL for foroom's [Ask Lena] publish link (Brief A, Slice 4):
+  `http://127.0.0.1:7655/` (local; remote connector = deferred big rock, noted below).
+- `desktop:config` now passes `CONNECTOR_MODE`, `CONNECTOR_NAME`, `WEB_SERVE`, `WEB_PORT` to Desktop.
+- 12/12 smoke still green.
+
 ## Shipped — built, hardened, and VALIDATED LIVE in Claude Desktop
-Slices 1–4b **MERGED to master** (PR #1: https://github.com/elopage/mcp-demo/pull/1).
-**Slice 2b** (the real flat-grant spine, below) is built + verified + pushed on branch
-`1871_mac_mcp_server`, **PR #2 pending**: https://github.com/elopage/mcp-demo/pull/2.
+Slices 1–4b + slice 2b all **MERGED to master** (PR #1 + PR #2).
 The full arc ran end-to-end in a real Desktop chat: discover → trial €0.10 → buyer-capped
 allowance → flat → coach answer → (bridge) earnings in the console.
 
@@ -41,9 +54,14 @@ allowance → flat → coach answer → (bridge) earnings in the console.
 - Verified serving; reload the console to re-pull `/earnings`. Seam: `GET http://127.0.0.1:7654/earnings`.
 
 ## Next
-- **Merge the open PRs once reviewed** — mcp-demo#2 (slice 2b → master; #1 already merged) + elopage#7087 (bridge consumer).
-- Optional polish: a `flat:proof` npm script (wraps `seed/check_flat.rb`) for the demo's SELECT beat;
-  prune accumulated dev-DB demo rows if a pristine DB is wanted (discover already shows only the one coach).
+- **Merge PR #3** (story2c creator-mode + buyer page → master).
+- elopage#7087 (bridge consumer) — still pending review.
+- Brief A (speedboat foroom paid-community) — uses the buyer page URL (`http://127.0.0.1:7655/`) for
+  the [Ask Lena] publish link; coordinate with D for the final URL when remote connector lands.
+- Slice 3 (optional fake seller tool `ablefy_business_pulse`) — deferred; cut if needed.
+- Remote connector (OAuth + hosted BE + per-user state) — explicitly out of scope for the demo; deferred
+  "big rock" for a future production Chunk.
+- Optional polish: a `flat:proof` npm script (wraps `seed/check_flat.rb`) for the demo's SELECT beat.
 
 ## Key decisions
 - **Algorand testnet, not x402/Base**: buyer wallet is server-side → x402's HTTP handshake never exercised in a
