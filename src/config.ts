@@ -15,6 +15,9 @@ function num(name: string, fallback: number): number {
 }
 
 export interface Config {
+  // connector identity
+  connectorMode: "creator" | "marketplace";
+  connectorName: string; // display name shown in Claude — "Ask Lena" (creator) or "ablefy" (marketplace)
   // ablefy backend
   backendKind: "fake" | "http";
   ablefyApiBase: string;
@@ -48,12 +51,21 @@ export interface Config {
   // earnings bridge endpoint (the ablefy-light console consumes this)
   earningsServe: boolean;
   earningsPort: number;
+  // buyer onboarding web page
+  webServe: boolean;
+  webPort: number;
 }
 
 /** Read configuration from the environment, applying slice-1 defaults. */
 export function loadConfig(): Config {
   const stateDir = path.join(os.homedir(), ".ablefy-mcp");
+  const connectorMode =
+    process.env.CONNECTOR_MODE === "marketplace" ? "marketplace" : "creator";
   return {
+    connectorMode,
+    connectorName:
+      process.env.CONNECTOR_NAME ||
+      (connectorMode === "creator" ? "Ask Lena" : "ablefy"),
     backendKind: process.env.ABLEFY_BACKEND === "http" ? "http" : "fake",
     // `||` (not `??`) for fields with real defaults, so an empty .env value falls back.
     ablefyApiBase: process.env.ABLEFY_API_BASE || "http://localhost:3000",
@@ -85,5 +97,7 @@ export function loadConfig(): Config {
     flatAccessFile: resolveHome(process.env.FLAT_ACCESS_FILE ?? path.join(stateDir, "flat-access.json")),
     earningsServe: process.env.EARNINGS_SERVE === "1" || process.env.EARNINGS_SERVE === "true",
     earningsPort: num("EARNINGS_PORT", 7654),
+    webServe: process.env.WEB_SERVE === "1" || process.env.WEB_SERVE === "true",
+    webPort: num("WEB_PORT", 7655),
   };
 }
