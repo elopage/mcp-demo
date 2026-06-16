@@ -4,7 +4,17 @@
 > Read at the start of every session, update at the end. Lives on `master`.
 
 ## Shipped — Story 2 Chunk C: creator-mode framing + buyer onboarding page
-Branch `1871_mac_story2c_creator_mode`, **PR pending** → master.
+**MERGED to master (PR #3, tip `2f61cd4`, 2026-06-16).** `desktop:config` now forwards
+`CONNECTOR_MODE`/`CONNECTOR_NAME`/`WEB_SERVE`/`WEB_PORT`, so a rebuild + re-run registers the
+**creator-mode "Ask Lena"** server (in-chat name; the Desktop sidebar KEY stays `ablefy` unless the
+key in `desktop-config.mjs` is renamed) + the buyer page on :7655.
+
+> **Cross-repo + demo state (2026-06-16):** LLM is now converged on the LiteLLM proxy across BOTH
+> repos — speedboat's coach reads `litellm.ablefy.ai` (speedboat #671) like this MCP, so the foroom
+> clone and "Ask Lena" are one model. **Next: a fully-local, staging-independent Story-2 rehearsal**
+> (the demo's elopage staging proved flaky) — playbook in the hub
+> `briefs/story2-next-local-demo-rehearsal.md`. For this MCP, local run = ablefy BE on :3000
+> (ABLEFY_BACKEND=http) + seed Lena + Algorand + LiteLLM + `earnings:serve` (:7654) + buyer web (:7655).
 
 - **Creator-mode framing** (Slice 1) — server name = `"Ask Lena"` (default; override via `CONNECTOR_NAME`),
   mode-conditional instructions ("direct line to Lena, don't shop around") + `findCoach` description
