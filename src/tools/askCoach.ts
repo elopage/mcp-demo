@@ -11,11 +11,12 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
     {
       title: "Ask the coach a question",
       description:
-        "Ask the creator's AI coach one question. Payment is automatic per the chosen " +
-        "mode: FLAT buyers ask free; otherwise this takes the per-question micropayment " +
-        "on-chain and enforces the monthly cap. The very first ask (before authorizing an " +
-        "allowance) is the one-off paid TRIAL; further asks need ablefy_authorize_allowance " +
-        "or ablefy_pay_flat. Returns the answer plus the payment proof and remaining cap.",
+        "Ask the creator's AI coach one question. Consent is required first: FLAT buyers ask " +
+        "free; otherwise the buyer must have authorized a per-question allowance with " +
+        "ablefy_authorize_allowance. If they haven't, this returns the pricing and asks them to " +
+        "authorize (or ablefy_pay_flat) BEFORE any charge — there is no silent trial. Once " +
+        "authorized, it takes the per-question micropayment on-chain within the monthly cap. " +
+        "Returns the answer plus the payment proof and remaining cap.",
       inputSchema: {
         product_id: z.string().describe("The coach's product_id."),
         question: z.string().describe("The user's question for the coach."),
@@ -40,17 +41,18 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
         return textResult(`*(flat · unlimited)*\n\n${answer}`);
       }
 
-      // Micro path. Gate repeated asks behind the bounded allowance.
+      // Micro path. Require explicit pricing + allowance consent before the FIRST paid answer —
+      // no silent trial. This surfaces the agent-commerce consent beat: show the cost, get the
+      // monthly cap authorized, then ask freely up to it.
       const authorized = deps.meter.isAuthorized(product_id);
-      const used = deps.meter.chargesThisMonth(product_id);
-      const isTrial = used === 0 && !authorized;
 
-      if (!authorized && used >= 1) {
+      if (!authorized) {
         return textResult(
-          `You've used your free-to-start trial question. To keep asking, authorize ` +
-            `${euro(price, currency)}/question (capped ${euro(cap, currency)}/month) with ` +
-            `**ablefy_authorize_allowance**, or go **${euro(coach.flatPrice, currency)} flat** ` +
-            `for unlimited with **ablefy_pay_flat**.`,
+          `Before I ask Lena: she answers for **${euro(price, currency)}/question**, capped at ` +
+            `**${euro(cap, currency)}/month** — or **${euro(coach.flatPrice, currency)} flat** for ` +
+            `unlimited. Authorize the per-question allowance with **ablefy_authorize_allowance** ` +
+            `(you approve once, then ask freely up to the cap), or go unlimited with ` +
+            `**ablefy_pay_flat**.`,
         );
       }
       if (!deps.meter.canCharge(product_id, price, cap)) {
@@ -101,10 +103,7 @@ export function registerAskCoach(server: McpServer, deps: Deps): void {
       const proof =
         `💸 **Paid ${euro(price, currency)}${onchain} on-chain** via ${receipt.rail} — tx \`${receipt.txId}\`` +
         (receipt.explorerUrl ? `\n🔗 Verify: ${receipt.explorerUrl}` : "");
-      const footer = isTrial
-        ? `\n\n*(that was your trial — ${euro(remaining, currency)} left of the ${euro(cap, currency)} cap. ` +
-          `Authorize the allowance to keep asking without re-approving each time.)*`
-        : `\n\n*(${euro(remaining, currency)} left of your ${euro(cap, currency)} monthly cap.)*`;
+      const footer = `\n\n*(${euro(remaining, currency)} left of your ${euro(cap, currency)} monthly cap.)*`;
       return textResult(`${proof}\n\n${answer}${footer}`);
     },
   );
