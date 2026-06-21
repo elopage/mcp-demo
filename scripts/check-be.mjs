@@ -54,8 +54,17 @@ try {
   const offer = await call("ablefy_get_offer", { product_id: pid });
   check("get_offer (real product) shows both modes", /Micropayment/.test(offer) && /€9\.00/.test(offer), offer);
 
-  const trial = await call("ablefy_ask_coach", { product_id: pid, question: "How do I capture on mobile?" });
-  check("ask_coach trial works over real backend", /Paid €0\.10/.test(trial) && /trial/.test(trial), trial);
+  // Consent-first: an unauthorized ask must NOT charge — it returns the pricing + authorize prompt.
+  const gate = await call("ablefy_ask_coach", { product_id: pid, question: "How do I capture on mobile?" });
+  check(
+    "ask_coach gates on consent (no silent trial)",
+    /ablefy_authorize_allowance/.test(gate) && !/Paid €/.test(gate),
+    gate,
+  );
+  // After authorizing the allowance, the same ask goes through and charges within the cap.
+  await call("ablefy_authorize_allowance", { product_id: pid });
+  const paid = await call("ablefy_ask_coach", { product_id: pid, question: "How do I capture on mobile?" });
+  check("ask_coach charges after allowance authorized", /Paid €0\.10/.test(paid), paid);
 
   const flat = await call("ablefy_pay_flat", { product_id: pid, buyer_email: BUYER });
   check("pay_flat writes a real MembershipSession", /Flat access granted/.test(flat) && /real MembershipSession `\d+`/.test(flat), flat);

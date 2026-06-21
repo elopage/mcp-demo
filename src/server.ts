@@ -14,9 +14,10 @@ export function buildServer(deps: Deps): McpServer {
   const instructions = creatorMode
     ? `${config.connectorName} is a direct line to Lena Brandt's AI coaching assistant — The Systems Studio. ` +
       "The user already wants to talk to Lena — surface her coach directly, don't shop around. " +
-      "Call ablefy_find_coach first to get her coach, then ablefy_get_offer for pricing details, " +
-      "then ablefy_ask_coach (paid per question, capped at your authorized allowance) or " +
-      "ablefy_pay_flat for unlimited access. " +
+      "Call ablefy_find_coach first to get her coach, then ablefy_get_offer and PRESENT the pricing " +
+      "to the user (per-question price, monthly cap, and the flat option). Before the first paid " +
+      "question, get explicit consent: call ablefy_authorize_allowance (or ablefy_pay_flat) — do " +
+      "NOT call ablefy_ask_coach until the user has authorized. Then ablefy_ask_coach within the cap. " +
       "IMPORTANT: when ablefy_ask_coach returns a payment line with an on-chain transaction link, " +
       "ALWAYS show that link to the user verbatim — it is the proof the real micropayment happened " +
       "and must not be summarized away."
